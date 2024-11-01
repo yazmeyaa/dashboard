@@ -1,4 +1,4 @@
-import type { LoginProps, ProjectResponse, Schema } from './types';
+import type { LoginProps, Project, ProjectResponse, Schema } from './types';
 import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
 export class AuthenticationError extends Error {
@@ -46,7 +46,7 @@ export class BackendService {
 
 	public async login(creds: LoginProps): Promise<string> {
 		const headers = new HeadersBuilder().base().headers();
-		const url = [PUBLIC_BACKEND_URL, 'api', 'auth', 'login'].join('/');
+		const url = [PUBLIC_BACKEND_URL, 'auth', 'login'].join('/');
 		const body = JSON.stringify(creds);
 
 		const response = await this.fetch(url, {
@@ -69,7 +69,7 @@ export class BackendService {
 	public async validateToken(token: string): Promise<boolean> {
 		const headers = new HeadersBuilder().base().withToken(token).headers();
 
-		const url = [PUBLIC_BACKEND_URL, 'api', 'auth', 'validate'].join('/');
+		const url = [PUBLIC_BACKEND_URL, 'auth', 'validate'].join('/');
 
 		const response = await this.fetch(url, {
 			method: 'POST',
@@ -82,7 +82,7 @@ export class BackendService {
 
 	public async getSchema<T extends string = string>(schema: string): Promise<Schema<T>> {
 		const headers = new HeadersBuilder().base().headers();
-		const url = [PUBLIC_BACKEND_URL, 'api', 'schema', schema].join('/');
+		const url = [PUBLIC_BACKEND_URL, 'schema', schema].join('/');
 		const response = await this.fetch(url, {
 			method: 'GET',
 			headers
@@ -95,7 +95,7 @@ export class BackendService {
 
 	public async getProjects(token: string): Promise<ProjectResponse> {
 		const headers = new HeadersBuilder().base().withToken(token).headers();
-		const url = [PUBLIC_BACKEND_URL, 'api', 'projects'].join('/');
+		const url = [PUBLIC_BACKEND_URL, 'projects'].join('/');
 
 		const response = await this.fetch(url, {
 			headers,
@@ -104,5 +104,22 @@ export class BackendService {
 
 		const parsed = await response.json();
 		return parsed as ProjectResponse;
+	}
+
+	public async updateProject(project: Project, token: string): Promise<Project> {
+		const headers = new HeadersBuilder().base().withToken(token).headers();
+		const url = [PUBLIC_BACKEND_URL, 'projects', project.id].join('/');
+		const method = 'PATCH';
+		const data = JSON.stringify(project);
+
+		const response = await this.fetch(url, {
+			headers,
+			method,
+			body: data
+		});
+
+		const parsed = await response.json();
+
+		return parsed as Project;
 	}
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import type { Project } from '$lib/api/types';
 	import TextTruncate from '$lib/components/TextTruncate/TextTruncate.svelte';
@@ -11,7 +12,7 @@
 	const { data }: Props = $props();
 	const columns = Object.keys(data.schema);
 
-	let showSidebar = $state(true);
+	let showSidebar = $state(false);
 	let selectedProject = $state<Project | null>(null);
 	let projectDraft = $state<Project | null>(null);
 	const affected = $derived.by(() => {
@@ -34,7 +35,20 @@
 		closeSidebar();
 	}
 
-	async function save() {}
+	async function save() {
+		if (!projectDraft) return;
+		const response = await fetch(`/api/projects/${projectDraft.id}`, {
+			method: 'PATCH',
+			body: JSON.stringify(projectDraft),
+			headers: {
+				Authorization: `Bearer ${data.token}`
+			}
+		});
+
+		const txt = await response.text();
+		await invalidateAll();
+		closeSidebar();
+	}
 
 	function openSidebar(project: Project): void {
 		selectedProject = project;
@@ -109,17 +123,26 @@
 					{/if}
 				</main>
 				<footer>
+					<div class="my-2 flex w-full items-center justify-center">
+						<button
+							class="rounded-md bg-red-500 px-4 py-2 text-xl text-neutral-50 transition-colors"
+						>
+							Удалить проект
+						</button>
+					</div>
 					<div class="flex w-full justify-between">
 						<button
-							disabled={affected}
+							onclick={save}
+							disabled={!affected}
 							class:cursor-not-allowed={!affected}
+							class:cursor-pointer={affected}
 							class:hover:bg-neutral-700={affected}
 							class="rounded-md bg-neutral-800 px-4 py-2 text-xl text-neutral-50 transition-colors"
 							>Сохранить</button
 						>
 						<button
 							onclick={closeSidebar}
-							class="rounded-md bg-neutral-800 px-4 py-2 text-xl text-neutral-50 transition-colors hover:bg-neutral-700"
+							class="cursor-pointer rounded-md bg-neutral-800 px-4 py-2 text-xl text-neutral-50 transition-colors hover:bg-neutral-700"
 							>Отменить</button
 						>
 					</div>
