@@ -1,4 +1,4 @@
-import type { LoginProps, Project, ProjectResponse, Schema } from './types';
+import type { FilesResponse, LoginProps, Project, ProjectResponse, Schema } from './types';
 import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
 export class AuthenticationError extends Error {
@@ -18,6 +18,11 @@ export class HeadersBuilder {
 	public base(): HeadersBuilder {
 		this._headers.append('Content-Type', 'application/json');
 		this._headers.append('Accept', 'application/json');
+		return this;
+	}
+
+	public file(): HeadersBuilder {
+		this._headers.append('Content-Type', 'multipart/form-data');
 		return this;
 	}
 
@@ -121,5 +126,19 @@ export class BackendService {
 		const parsed = await response.json();
 
 		return parsed as Project;
+	}
+
+	public async getFiles(token: string): Promise<FilesResponse> {
+		const headers = new HeadersBuilder().base().withToken(token).headers();
+		const url = [PUBLIC_BACKEND_URL, 'static', 'files'].join('/');
+
+		const response = await this.fetch(url, {
+			method: 'GET',
+			headers
+		});
+
+		const parsed = await response.json();
+
+		return parsed as FilesResponse;
 	}
 }

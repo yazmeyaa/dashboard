@@ -37,4 +37,11 @@ export type Project = {
 	imgFileId: number;
 };
 
+export type File = {
+	id: number;
+	name: string;
+	fileName: string;
+};
+
 export type ProjectResponse = BasicResponse<Project[]>;
+export type FilesResponse = BasicResponse<File[]>;

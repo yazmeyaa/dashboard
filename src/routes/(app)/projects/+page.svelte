@@ -3,8 +3,10 @@
 	import { clickOutside } from '$lib/actions/click-outside';
 	import type { Project } from '$lib/api/types';
 	import Input from '$lib/components/Input/Input.svelte';
+	import TableHeader from '$lib/components/Table/TableHeader.svelte';
 	import TextTruncate from '$lib/components/TextTruncate/TextTruncate.svelte';
 	import type { PageData } from './$types';
+	import { fly } from 'svelte/transition';
 
 	interface Props {
 		data: PageData;
@@ -65,14 +67,8 @@
 </script>
 
 <div class="relative w-full overflow-x-auto">
-	<table class="mx-4 my-2 w-full border-collapse border-2 border-neutral-600 bg-neutral-600">
-		<thead>
-			<tr>
-				{#each columns as column}
-					<th class="border border-gray-300 px-4 py-2 text-left">{column}</th>
-				{/each}
-			</tr>
-		</thead>
+	<table class="mx-4 my-2 border-collapse border-2 border-neutral-600 bg-neutral-600">
+		<TableHeader schema={data.schema} />
 		<tbody>
 			{#each data.projects as project}
 				<tr
@@ -81,7 +77,7 @@
 				>
 					{#each columns as colKey}
 						<td class="text-nowrap border border-gray-300 px-4 py-2">
-							<TextTruncate text={project[colKey as keyof Project]} />
+							<TextTruncate maxLength={24} text={project[colKey as keyof Project]} />
 						</td>
 					{/each}
 				</tr>
@@ -97,6 +93,7 @@
 				use:clickOutside={null}
 				onoutsideclick={handleOutsideClick}
 				class="absolute right-0 top-0 flex h-full min-w-96 max-w-3xl flex-col overflow-y-auto bg-neutral-500 px-2 py-4"
+				transition:fly={{ x: 300, duration: 300 }}
 			>
 				<header>
 					<h2 class="text-xl">{selectedProject?.name ?? 'Проект не выбран...'}</h2>
