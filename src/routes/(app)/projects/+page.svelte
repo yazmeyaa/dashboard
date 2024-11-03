@@ -2,6 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import type { Project } from '$lib/api/types';
+	import Input from '$lib/components/Input/Input.svelte';
 	import TextTruncate from '$lib/components/TextTruncate/TextTruncate.svelte';
 	import type { PageData } from './$types';
 
@@ -64,7 +65,7 @@
 </script>
 
 <div class="relative w-full overflow-x-auto">
-	<table class="mx-4 my-2 w-full border-collapse border-2 border-neutral-600 bg-neutral-300">
+	<table class="mx-4 my-2 w-full border-collapse border-2 border-neutral-600 bg-neutral-600">
 		<thead>
 			<tr>
 				{#each columns as column}
@@ -108,16 +109,16 @@
 						<div class="flex flex-col gap-4">
 							{#each Object.keys(selectedProject) as key}
 								{@const id = `proj_${selectedProject.id}_input_${key}`}
-								<div class="flex flex-col">
-									<label class="text-lg text-neutral-50" for={id}>{key}</label>
-									<input
-										class="flex h-9 items-center rounded-lg px-4"
-										type={data.schema[key].type}
-										{id}
-										readonly={data.schema[key].isReadonly}
-										bind:value={projectDraft[key as keyof Project]}
-									/>
-								</div>
+								<Input
+									label={key +
+										(projectDraft[key as keyof Project] !== selectedProject[key as keyof Project]
+											? ' (edited)'
+											: '')}
+									type={data.schema[key].type}
+									{id}
+									readonly={data.schema[key].isReadonly}
+									bind:value={projectDraft[key as keyof Project]}
+								/>
 							{/each}
 						</div>
 					{/if}
