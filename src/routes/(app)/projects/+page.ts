@@ -6,5 +6,5 @@ export const load: PageLoad = async ({ fetch, data }) => {
 	apiService.useFetcher(fetch);
 	const schema = await apiService.getSchema('project');
 	const projects = await apiService.getProjects(data.token!);
-	return { schema, projects: projects.data, token: data.token };
+	return { schema, projects, token: data.token };
 };

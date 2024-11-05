@@ -21,12 +21,6 @@ export type FieldSchema = {
 	isReadonly: boolean;
 };
 
-export type BasicResponse<T> = {
-	code: number;
-	status: string;
-	data: T;
-};
-
 export type Project = {
 	id: number;
 	name: string;
@@ -43,5 +37,5 @@ export type File = {
 	fileName: string;
 };
 
-export type ProjectResponse = BasicResponse<Project[]>;
-export type FilesResponse = BasicResponse<File[]>;
+export type ProjectResponse = Project[];
+export type FilesResponse = File[];

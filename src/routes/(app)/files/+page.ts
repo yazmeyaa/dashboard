@@ -6,5 +6,5 @@ export const load: PageLoad = async ({ fetch, data }) => {
 	apiService.useFetcher(fetch);
 	const schema = await apiService.getSchema('staticFile');
 	const files = await apiService.getFiles(data.token!);
-	return { schema, token: data.token, files: files.data };
+	return { schema, token: data.token, files };
 };

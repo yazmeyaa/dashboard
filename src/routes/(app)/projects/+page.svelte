@@ -30,7 +30,6 @@
 
 	function onTableRowClick(event: Event, project: Project): void {
 		event.stopPropagation();
-		event.preventDefault();
 		openSidebar(project);
 	}
 
@@ -38,9 +37,23 @@
 		closeSidebar();
 	}
 
+	async function deleteSelectedProject() {
+		if (!selectedProject) return;
+
+		await fetch(`/api/projects/${selectedProject.id}`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ${data.token}`
+			}
+		});
+
+		await invalidateAll();
+		closeSidebar();
+	}
+
 	async function save() {
 		if (!projectDraft) return;
-		const response = await fetch(`/api/projects/${projectDraft.id}`, {
+		await fetch(`/api/projects/${projectDraft.id}`, {
 			method: 'PATCH',
 			body: JSON.stringify(projectDraft),
 			headers: {
@@ -48,7 +61,6 @@
 			}
 		});
 
-		const txt = await response.text();
 		await invalidateAll();
 		closeSidebar();
 	}
@@ -123,6 +135,7 @@
 				<footer>
 					<div class="my-2 flex w-full items-center justify-center">
 						<button
+							onclick={deleteSelectedProject}
 							class="rounded-md bg-red-500 px-4 py-2 text-xl text-neutral-50 transition-colors"
 						>
 							Удалить проект
