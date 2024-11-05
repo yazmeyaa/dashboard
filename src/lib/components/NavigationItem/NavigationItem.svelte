@@ -17,7 +17,7 @@
 	class:bg-neutral-800={active}
 	class="rounded-lg text-neutral-50 transition-colors hover:bg-neutral-600"
 >
-	<a {href} class:underline={active} class="block px-2 py-4 text-xl">
+	<a {href} class:underline={active} class="block px-2 py-2 text-xl">
 		<span>{@render children()}</span>
 	</a>
 </li>
